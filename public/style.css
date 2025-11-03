@@ -1,0 +1,41 @@
+body {
+  font-family: sans-serif;
+  text-align: center;
+  background: #f0f8ff;
+  margin: 0;
+  padding: 0;
+}
+
+#login, #game, #endScreen {
+  margin-top: 100px;
+}
+
+input, button {
+  padding: 10px;
+  font-size: 16px;
+}
+
+button {
+  background: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+button:hover {
+  background: #0056b3;
+}
+
+#message {
+  font-weight: bold;
+  margin-top: 10px;
+}
+.settings {
+  margin: 15px 0;
+}
+.settings select {
+  padding: 8px;
+  font-size: 14px;
+  margin: 0 5px;
+}
