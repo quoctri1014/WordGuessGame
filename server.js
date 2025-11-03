@@ -12,6 +12,25 @@ const server = http.createServer(app);
 const io = new Server(server);
 const wordPacks = {}; // Dùng object để lưu từ vựng theo category
 
+// ======= KẾT NỐI DATABASE =======
+const db = mysql.createConnection({
+  host: "localhost",
+  user: "root",
+  password: "",
+  database: "wordgame"
+});
+
+// Kết nối database và load từ vựng
+db.connect(err => {
+  if (err) {
+    console.error("❌ Database error:", err);
+    return;
+  }
+  console.log("✅ Connected to MySQL");
+  // Load từ vựng sau khi kết nối thành công
+  loadWordsFromDatabase();
+});
+
 // Load từ vựng từ database
 function loadWordsFromDatabase() {
   db.query("SELECT * FROM vocabulary", (err, results) => {
@@ -40,8 +59,7 @@ function loadWordsFromDatabase() {
   });
 }
 
-// Load từ vựng khi khởi động server
-loadWordsFromDatabase();
+// Load từ vựng sẽ được gọi sau khi kết nối database thành công
 
 function getRandomWord(packName) {
   // Mặc định dùng gói "words" nếu không tìm thấy
@@ -265,18 +283,7 @@ app.delete("/api/words/:pack/:word", (req, res) => {
   }
 });
 
-// ======= KẾT NỐI DATABASE =======
-const db = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "",
-  database: "wordgame"
-});
 
-db.connect(err => {
-  if (err) console.error("❌ Database error:", err);
-  else console.log("✅ Connected to MySQL");
-});
 // ======= SOCKET IO =======
 io.on("connection", socket => {
   console.log("👤 New player connected");
@@ -400,6 +407,19 @@ function endGame(socket) {
   });
 }
 
-server.listen(3000, () =>
-  console.log("🚀 Server running at http://localhost:3000")
-);
+// Khởi động server sau khi đã kết nối database thành công
+db.connect(err => {
+  if (err) {
+    console.error("❌ Database error:", err);
+    process.exit(1); // Thoát nếu không thể kết nối database
+  }
+  console.log("✅ Connected to MySQL");
+
+  // Load từ vựng từ database
+  loadWordsFromDatabase();
+
+  // Khởi động server sau khi đã sẵn sàng
+  server.listen(3000, () => {
+    console.log("🚀 Server running at http://localhost:3000");
+  });
+});
