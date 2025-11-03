@@ -10,7 +10,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
-const wordPacks = {}; // Dùng object để lưu từ vựng theo category
+let wordPacks = {}; // Dùng object để lưu từ vựng theo category
 
 // ======= KẾT NỐI DATABASE =======
 const db = mysql.createConnection({
@@ -33,23 +33,33 @@ db.connect(err => {
 
 // Load từ vựng từ database
 function loadWordsFromDatabase() {
+  console.log('Loading words from database...');
   db.query("SELECT * FROM vocabulary", (err, results) => {
     if (err) {
       console.error("❌ Không thể load từ vựng:", err);
       return;
     }
+    console.log(`Loaded ${results.length} words from database`);
 
     // Phân loại từ vựng theo category
+    // Reset bằng cách gán lại object mới
+    wordPacks = {};
+    console.log('Resetting and loading words into categories...');
     results.forEach(word => {
       const category = word.category || 'general';
       if (!wordPacks[category]) {
         wordPacks[category] = [];
       }
-      wordPacks[category].push({
-        word: word.word,
-        meaning: word.meaning,
-        image: word.image
-      });
+      // Kiểm tra dữ liệu hợp lệ trước khi thêm vào
+      if (word.word && word.meaning && word.image) {
+        wordPacks[category].push({
+          word: word.word,
+          meaning: word.meaning,
+          image: word.image
+        });
+      } else {
+        console.error('Invalid word data:', word);
+      }
     });
 
     // Log số lượng từ vựng đã load
@@ -67,11 +77,13 @@ function loadWordsFromDatabase() {
 // Load từ vựng sẽ được gọi sau khi kết nối database thành công
 
 function getRandomWord(packName) {
+  console.log('Getting random word from pack:', packName);
   // Mặc định dùng gói "general" nếu không tìm thấy (db dùng categories như 'general','animals','jobs')
   const pack = wordPacks[packName] || wordPacks["general"]; 
 
   if (!pack || pack.length === 0) {
     console.error("No words found for pack:", packName);
+    console.log('Available packs:', Object.keys(wordPacks));
     // Xử lý lỗi (ví dụ, trả về một từ mặc định)
     return { word: "error", meaning: "lỗi", image: "default.jpg" };
   }
@@ -190,44 +202,72 @@ app.put("/api/players/:name/score", (req, res) => {
 
     // Đoán chữ cái cho chế độ hangman
     socket.on("guessLetter", letter => {
-      if (socket.data.gameMode !== "hangman" || !socket.data.hangmanState) return;
-      letter = letter.toLowerCase();
-      const state = socket.data.hangmanState;
-      if (state.guessedLetters.includes(letter) || state.failedLetters.includes(letter)) return; // đã đoán rồi
-      if (state.word.includes(letter)) {
-        state.guessedLetters.push(letter);
-      } else {
-        state.failedLetters.push(letter);
-        state.fails++;
-      }
-      // Tạo chuỗi hiển thị
-      let display = "";
-      for (let c of state.word) {
-        display += (state.guessedLetters.includes(c) ? c : "_") + " ";
-      }
-      display = display.trim();
-      // Kiểm tra thắng/thua
-      let win = state.word.split("").every(c => state.guessedLetters.includes(c));
-      let lose = state.fails >= state.maxFails;
-      io.to(socket.id).emit("hangmanUpdate", {
-        display,
-        guessedLetters: state.guessedLetters,
-        failedLetters: state.failedLetters,
-        fails: state.fails,
-        maxFails: state.maxFails,
-        image: state.image,
-        win,
-        lose,
-        word: win || lose ? state.word : undefined
+        if (socket.data.gameMode !== "hangman" || !socket.data.hangmanState) return;
+        if (!letter || typeof letter !== 'string') return;
+        letter = letter.toLowerCase();
+
+        // Only accept single a-z letters
+        if (!/^[a-z]$/.test(letter)) {
+          // ignore invalid characters
+          return;
+        }
+
+        const state = socket.data.hangmanState;
+
+        // If already guessed, notify the client (so it can flash the key)
+        if (state.guessedLetters.includes(letter) || state.failedLetters.includes(letter)) {
+          io.to(socket.id).emit('alreadyGuessed', { letter });
+          return;
+        }
+
+        // If the word contains the letter, add to guessedLetters
+        if (state.word.includes(letter)) {
+          state.guessedLetters.push(letter);
+        } else {
+          state.failedLetters.push(letter);
+          state.fails++;
+        }
+
+        // Build display string: reveal non-letters (spaces, punctuation) automatically
+        let displayParts = [];
+        for (let c of state.word) {
+          if (/^[a-z]$/.test(c)) {
+            displayParts.push(state.guessedLetters.includes(c) ? c : '_');
+          } else {
+            // reveal non-letter characters (space, dash, etc.)
+            displayParts.push(c);
+          }
+        }
+        const display = displayParts.join(' ');
+
+        // Determine win: all unique letter chars are guessed
+        const lettersSet = new Set(state.word.split('').filter(ch => /^[a-z]$/.test(ch)));
+        const guessedSet = new Set(state.guessedLetters);
+        let win = true;
+        for (let ch of lettersSet) if (!guessedSet.has(ch)) { win = false; break; }
+
+        let lose = state.fails >= state.maxFails;
+
+        io.to(socket.id).emit("hangmanUpdate", {
+          display,
+          guessedLetters: state.guessedLetters,
+          failedLetters: state.failedLetters,
+          fails: state.fails,
+          maxFails: state.maxFails,
+          image: state.image,
+          win,
+          lose,
+          word: win || lose ? state.word : undefined
+        });
+
+        if (win) {
+          socket.data.score = (socket.data.score || 0) + 10;
+          db.query("UPDATE players SET score = ? WHERE name = ?", [socket.data.score, socket.data.playerName]);
+          setTimeout(() => startHangmanRound(socket), 3000);
+        } else if (lose) {
+          setTimeout(() => startHangmanRound(socket), 3000);
+        }
       });
-      if (win) {
-        socket.data.score = (socket.data.score || 0) + 10;
-        db.query("UPDATE players SET score = ? WHERE name = ?", [socket.data.score, socket.data.playerName]);
-        setTimeout(() => startHangmanRound(socket), 3000);
-      } else if (lose) {
-        setTimeout(() => startHangmanRound(socket), 3000);
-      }
-    });
 
     socket.on("restartGame", (data) => {
       socket.data.gameMode = data.mode || "normal";
@@ -255,8 +295,12 @@ app.put("/api/players/:name/score", (req, res) => {
       maxFails: 6,
       image: randomWord.image
     };
+    // Reveal non-letter characters (spaces, punctuation) and hide letters
     let display = "";
-    for (let c of word) display += "_ ";
+    for (let c of word) {
+      if (/^[a-z]$/.test(c)) display += "_ ";
+      else display += c + " ";
+    }
     display = display.trim();
     io.to(socket.id).emit("hangmanStart", {
       display,
@@ -427,7 +471,15 @@ function startNewRound(socket) {
 
   // 1. Lấy từ ngẫu nhiên từ ĐÚNG GÓI TỪ
   const packName = socket.data.wordPack || "general";
+  console.log('Starting new round:', { packName, mode: socket.data.gameMode });
+  
   const randomWord = getRandomWord(packName);
+  console.log('Got random word:', { word: randomWord.word, image: randomWord.image });
+
+  if (!randomWord || !randomWord.word || !randomWord.image) {
+    console.error('Invalid random word:', randomWord);
+    return;
+  }
 
   socket.data.currentWord = randomWord;
   socket.data.timeLeft = 30;
