@@ -59,22 +59,61 @@ restartBtn.onclick = () => {
 guessInput.addEventListener("keypress", e => {
   if (e.key === "Enter") {
     const guess = guessInput.value.trim();
-    if (guess) {
+    if (!guess) return;
+    if (currentGameMode === "hangman") {
+      // Chỉ nhận 1 ký tự, gửi event guessLetter
+      if (guess.length === 1 && /^[a-zA-Z]$/.test(guess)) {
+        socket.emit("guessLetter", guess.toLowerCase());
+        guessInput.value = "";
+      } else {
+        messageEl.innerText = "Chỉ nhập 1 chữ cái!";
+      }
+    } else {
       socket.emit("guessWord", guess);
       guessInput.value = "";
     }
   }
 });
 
-// Khi server gửi từ mới
+// Khi server gửi từ mới (chế độ thường/ngược)
 socket.on("newWord", data => {
-  // 1. KHÔNG tự chạy timer nữa
-  // 2. Đọc 'data.display' (do server gửi) thay vì 'data.wordLength'
-  imageEl.src = "images/" + data.image;
-  imageEl.src = data.image; // Sử dụng URL trực tiếp từ Unsplash
+  if (currentGameMode === "hangman") return;
+  imageEl.src = data.image;
   hiddenWordEl.innerText = data.display;
   messageEl.innerText = "";
-  timerEl.innerText = 30; // Reset về 30
+  timerEl.innerText = 30;
+});
+
+// Khi server gửi bắt đầu vòng hangman
+socket.on("hangmanStart", data => {
+  imageEl.src = data.image;
+  hiddenWordEl.innerText = data.display;
+  messageEl.innerText = "";
+  timerEl.innerText = "";
+  guessInput.placeholder = "Nhập 1 chữ cái...";
+  // Có thể vẽ hình treo cổ ở đây nếu muốn
+});
+
+// Khi server gửi cập nhật trạng thái hangman
+socket.on("hangmanUpdate", data => {
+  hiddenWordEl.innerText = data.display;
+  messageEl.innerText = `Sai: ${data.fails}/${data.maxFails} | Đã đoán: ${data.guessedLetters.join(", ")}`;
+  // Nếu thua
+  if (data.lose) {
+    messageEl.innerText = `💀 Thua rồi! Đáp án: ${data.word}`;
+    setTimeout(() => {
+      messageEl.innerText = "";
+    }, 3000);
+  }
+  // Nếu thắng
+  if (data.win) {
+    messageEl.innerText = `🎉 Đúng rồi! Đáp án: ${data.word}`;
+    score += 10;
+    scoreDisplay.innerText = `👤 ${playerName} | Score: ${score}`;
+    setTimeout(() => {
+      messageEl.innerText = "";
+    }, 3000);
+  }
 });
 
 // THÊM LẠI HÀM LẮNG NGHE TIMER TỪ SERVER
