@@ -15,4 +15,3 @@ db.connect(err => {
 export default db;
 
 
-cd D:\LAPTRINHMANG\WordGuessGame

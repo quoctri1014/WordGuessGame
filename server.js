@@ -56,14 +56,19 @@ function loadWordsFromDatabase() {
     Object.keys(wordPacks).forEach(category => {
       console.log(`📘 Loaded ${wordPacks[category].length} words from ${category} category`);
     });
+    // Log a few sample image URLs per category to help debug broken images
+    Object.keys(wordPacks).forEach(category => {
+      const samples = wordPacks[category].slice(0, 3).map(w => w.image);
+      if (samples.length > 0) console.log(`🔍 Sample images for ${category}:`, samples);
+    });
   });
 }
 
 // Load từ vựng sẽ được gọi sau khi kết nối database thành công
 
 function getRandomWord(packName) {
-  // Mặc định dùng gói "words" nếu không tìm thấy
-  const pack = wordPacks[packName] || wordPacks["words"]; 
+  // Mặc định dùng gói "general" nếu không tìm thấy (db dùng categories như 'general','animals','jobs')
+  const pack = wordPacks[packName] || wordPacks["general"]; 
 
   if (!pack || pack.length === 0) {
     console.error("No words found for pack:", packName);
@@ -292,8 +297,8 @@ io.on("connection", socket => {
     // data giờ là object: { name, mode, pack }
     socket.data.playerName = data.name;
     socket.data.score = 0;
-    socket.data.gameMode = data.mode || "normal"; // Lưu chế độ
-    socket.data.wordPack = data.pack || "words";  // Lưu gói từ
+  socket.data.gameMode = data.mode || "normal"; // Lưu chế độ
+  socket.data.wordPack = data.pack || "general";  // Lưu gói từ (mặc định 'general' tương ứng DB)
     console.log(`Player ${data.name} registered (Mode: ${data.mode}, Pack: ${data.pack})`);
     
     // Ghi vào database (giữ nguyên)
@@ -351,8 +356,8 @@ io.on("connection", socket => {
 
   socket.on("restartGame", (data) => {
     // data giờ là object: { mode, pack }
-    socket.data.gameMode = data.mode || "normal"; // Cập nhật lại cài đặt
-    socket.data.wordPack = data.pack || "words";
+  socket.data.gameMode = data.mode || "normal"; // Cập nhật lại cài đặt
+  socket.data.wordPack = data.pack || "general";
     startNewRound(socket);
   });
 });
@@ -361,7 +366,7 @@ function startNewRound(socket) {
   clearInterval(socket.data?.timer);
 
   // 1. Lấy từ ngẫu nhiên từ ĐÚNG GÓI TỪ
-  const packName = socket.data.wordPack || "words";
+  const packName = socket.data.wordPack || "general";
   const randomWord = getRandomWord(packName);
 
   socket.data.currentWord = randomWord;

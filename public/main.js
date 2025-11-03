@@ -2,7 +2,7 @@ const socket = io();
 let playerName = "";
 let score = 0;
 let currentGameMode = "normal";
-let currentWordPack = "words";
+let currentWordPack = "general";
 let timerInterval;
 
 const loginDiv = document.getElementById("login");
@@ -71,7 +71,8 @@ socket.on("newWord", data => {
   // 1. KHÔNG tự chạy timer nữa
   // 2. Đọc 'data.display' (do server gửi) thay vì 'data.wordLength'
   imageEl.src = "images/" + data.image;
-  hiddenWordEl.innerText = data.display; // <-- LỖI LÀ Ở ĐÂY
+  imageEl.src = data.image; // Sử dụng URL trực tiếp từ Unsplash
+  hiddenWordEl.innerText = data.display;
   messageEl.innerText = "";
   timerEl.innerText = 30; // Reset về 30
 });
