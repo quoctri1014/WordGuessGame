@@ -41,7 +41,7 @@ function loadWordsFromDatabase() {
     }
     console.log(`Loaded ${results.length} words from database`);
 
-    // Phân loại từ vựng theo category
+
     // Reset bằng cách gán lại object mới
     wordPacks = {};
     console.log('Resetting and loading words into categories...');
