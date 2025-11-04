@@ -5,6 +5,8 @@ import db from "./db.js"
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import { saveScore, getTopScores } from "./scoreService.js";
+
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -165,3 +167,4 @@ function endGame(socket) {
 server.listen(3000, () =>
   console.log("🚀 Server running at http://localhost:3000")
 );
+
