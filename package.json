@@ -1,0 +1,20 @@
+{
+  "name": "wordguessgame",
+  "version": "1.0.0",
+  "description": "English Word Guess Game with Socket.io",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "mysql2": "^3.15.3",
+    "socket.io": "^4.8.1",
+    "sqlite3": "^5.1.7"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
