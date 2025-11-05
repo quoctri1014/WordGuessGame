@@ -1,39 +1,44 @@
-// 📄 scoreService.js
-import db from "./db.js";
+// scoreService.js
+import db from "./db.js"; // db là pool từ mysql2/promise
 
 /**
- * Lưu điểm khi người chơi hết giờ hoặc thoát game
- * @param {string} name - tên người chơi
+ * Lưu điểm của người chơi vào bảng scores
+ * @param {number} userId - ID của người chơi
  * @param {number} score - điểm đạt được
  */
-export function saveScore(name, score) {
-  return new Promise((resolve, reject) => {
-    const sql = "INSERT INTO scores (name, score) VALUES (?, ?)";
-    db.query(sql, [name, score], (err, result) => {
-      if (err) {
-        console.error("❌ Error saving score:", err);
-        reject(err);
-      } else {
-        console.log(`💾 Saved score for ${name}: ${score}`);
-        resolve(result);
-      }
-    });
-  });
+export async function saveScore(userId, score) {
+  try {
+    const [result] = await db.execute(
+      "INSERT INTO scores (userId, score) VALUES (?, ?)",
+      [userId, score]
+    );
+    console.log(`💾 Saved score for userId=${userId}: ${score}`);
+    return result;
+  } catch (err) {
+    console.error("❌ saveScore error:", err);
+    throw err;
+  }
 }
 
 /**
- * Lấy top 10 người chơi có điểm cao nhất
+ * Lấy top N điểm cao nhất
+ * @param {number} limit - số lượng top muốn lấy (mặc định 10)
+ * @returns {Array} mảng object { username, score }
  */
-export function getTopScores() {
-  return new Promise((resolve, reject) => {
-    const sql = "SELECT name, score FROM scores ORDER BY score DESC LIMIT 10";
-    db.query(sql, (err, results) => {
-      if (err) {
-        console.error("❌ Error fetching top scores:", err);
-        reject(err);
-      } else {
-        resolve(results);
-      }
-    });
-  });
+export async function getTopScores(limit = 10) {
+  try {
+    const [rows] = await db.execute(
+      `SELECT u.username, s.score
+       FROM scores s
+       JOIN users u ON s.userId = u.id
+       ORDER BY s.score DESC, s.created_at ASC
+       LIMIT ?`,
+      [limit]
+    );
+    // Thêm rank để client hiển thị dễ hơn
+    return rows.map((item, index) => ({ ...item, rank: index + 1 }));
+  } catch (err) {
+    console.error("❌ getTopScores error:", err);
+    return [];
+  }
 }
