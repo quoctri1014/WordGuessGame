@@ -1,12 +1,11 @@
 import express from "express";
 import http from "http";
 import { Server } from "socket.io";
-import db from "./db.js"
+import mysql from "mysql2";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { saveScore, getTopScores } from "./scoreService.js";
-
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -41,6 +40,19 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use("/images", express.static(path.join(__dirname, "images")));
 app.use(express.json());
 
+// ======= KẾT NỐI DATABASE =======
+const db = mysql.createConnection({
+  host: "localhost",
+  user: "root",
+  password: "",
+  database: "wordgame"
+});
+
+db.connect(err => {
+  if (err) console.error("❌ Database error:", err);
+  else console.log("✅ Connected to MySQL");
+});
+
 // ======= SOCKET IO =======
 io.on("connection", socket => {
   console.log("👤 New player connected");
@@ -66,105 +78,138 @@ io.on("connection", socket => {
 
   // ======= NGƯỜI CHƠI ĐOÁN =======
   socket.on("guessWord", guess => {
-  if (!socket.data.currentWord) return;
+    if (!socket.data.currentWord) return;
 
-  // XÁC ĐỊNH ĐÁP ÁN ĐÚNG DỰA THEO CHẾ ĐỘ CHƠI
-  let correctAnswer = "";
-  if (socket.data.gameMode === "reverse") {
-    // Chế độ ngược: Đáp án là TỪ TIẾNG VIỆT
-    correctAnswer = socket.data.currentWord.meaning.toLowerCase();
-  } else {
-    // Chế độ thường: Đáp án là TỪ TIẾNG ANH
-    correctAnswer = socket.data.currentWord.word.toLowerCase();
-  }
-  // ------------------------------------------------
+    // XÁC ĐỊNH ĐÁP ÁN ĐÚNG DỰA THEO CHẾ ĐỘ CHƠI
+    let correctAnswer = "";
+    if (socket.data.gameMode === "reverse") {
+      // Chế độ ngược: Đáp án là TỪ TIẾNG VIỆT
+      correctAnswer = socket.data.currentWord.meaning.toLowerCase();
+    } else {
+      // Chế độ thường: Đáp án là TỪ TIẾNG ANH
+      correctAnswer = socket.data.currentWord.word.toLowerCase();
+    }
 
-  // SO SÁNH VỚI ĐÁP ÁN ĐÚNG
-  if (guess.toLowerCase() === correctAnswer) {
-    // ======== (Phần còn lại giữ nguyên) ========
-    socket.data.score = (socket.data.score || 0) + 10;
+    // SO SÁNH VỚI ĐÁP ÁN ĐÚNG
+    if (guess.toLowerCase() === correctAnswer) {
+      socket.data.score = (socket.data.score || 0) + 10;
 
-    db.query("UPDATE players SET score = ? WHERE name = ?", [
-      socket.data.score,
-      socket.data.playerName // Sửa .name thành .playerName nếu bạn gặp lỗi ở turn trước
-    ]);
+      db.query("UPDATE players SET score = ? WHERE name = ?", [
+        socket.data.score,
+        socket.data.playerName
+      ]);
 
-    io.to(socket.id).emit("correctGuess", {
-      word: socket.data.currentWord.word,
-      meaning: socket.data.currentWord.meaning,
-      score: socket.data.score
-    });
+      io.to(socket.id).emit("correctGuess", {
+        word: socket.data.currentWord.word,
+        meaning: socket.data.currentWord.meaning,
+        score: socket.data.score
+      });
 
-    clearInterval(socket.data.timer);
+      clearInterval(socket.data.timer);
+      setTimeout(() => startNewRound(socket), 3000);
+    } else {
+      io.to(socket.id).emit("wrongGuess");
+    }
+  });
 
-    setTimeout(() => {
-      startNewRound(socket);
-    }, 3000);
-    // ======== (Hết phần giữ nguyên) ========
-  } else {
-    io.to(socket.id).emit("wrongGuess");
-  }
-});
-
+  // ======= NGƯỜI CHƠI CHƠI LẠI =======
   socket.on("restartGame", (data) => {
-    // data giờ là object: { mode, pack }
-    socket.data.gameMode = data.mode || "normal"; // Cập nhật lại cài đặt
+    socket.data.gameMode = data.mode || "normal";
     socket.data.wordPack = data.pack || "words";
     startNewRound(socket);
   });
+
+  // ======= NGƯỜI CHƠI THOÁT TAB =======
+  socket.on("disconnect", async () => {
+    const name = socket.data.playerName;
+    const score = socket.data.score || 0;
+
+    if (name) {
+      console.log(`👋 ${name} disconnected. Saving score...`);
+      await saveScore(name, score);
+    }
+  });
 });
-// ======= HÀM BẮT ĐẦU MỖI VÒNG =======
+// ======= BẮT ĐẦU VÒNG CHƠI MỚI =======
 function startNewRound(socket) {
-  clearInterval(socket.data?.timer);
-
-  // 1. Lấy từ ngẫu nhiên từ ĐÚNG GÓI TỪ
   const packName = socket.data.wordPack || "words";
-  const randomWord = getRandomWord(packName);
+  const pack = wordPacks[packName];
 
-  socket.data.currentWord = randomWord;
-  socket.data.timeLeft = 30;
-
-  // 2. Xử lý logic CHẾ ĐỘ NGƯỢC
- let targetWord = "";
-  if (socket.data.gameMode === "reverse") {
-    // Chế độ ngược: Mục tiêu là TỪ TIẾNG VIỆT
-    targetWord = randomWord.meaning;
-  } else {
-    // Chế độ thường: Mục tiêu là TỪ TIẾNG ANH
-    targetWord = randomWord.word;
+  if (!pack || pack.length === 0) {
+    socket.emit("message", "⚠️ Không có dữ liệu từ vựng!");
+    return;
   }
 
-  // TẠO GẠCH NGANG DỰA TRÊN TỪ MỤC TIÊU (Bất kể chế độ nào)
-  const displayString = "_ ".repeat(targetWord.length).trim();
+  // Lấy từ ngẫu nhiên
+  const randomWord = pack[Math.floor(Math.random() * pack.length)];
+  socket.data.currentWord = randomWord;
 
-  // 3. Gửi 'displayString' xuống client
-  io.to(socket.id).emit("newWord", {
-    image: randomWord.image,
-    display: displayString // Client sẽ nhận 'display' thay vì 'hidden'
+  // ======= Thêm phần ảnh minh họa =======
+  // Tên file ảnh trùng với từ (vd: cat.jpg, teacher.png)
+  // Ảnh nên nằm trong thư mục: public/images/
+  const imageFile = `${randomWord.word.toLowerCase()}.jpg`;
+  const fs = require("fs");
+  const imagePath = `public/images/${imageFile}`;
+
+  // Kiểm tra xem ảnh có tồn tại không, nếu không thì bỏ qua
+  const hasImage = fs.existsSync(imagePath);
+
+  // ======= Gửi dữ liệu cho client =======
+  io.to(socket.id).emit("newRound", {
+    hint:
+      socket.data.gameMode === "reverse"
+        ? randomWord.word // Chế độ ngược: hiển thị từ tiếng Anh
+        : randomWord.meaning, // Chế độ thường: hiển thị nghĩa
+    category: packName,
+    image: hasImage ? imageFile : null, // chỉ gửi ảnh nếu có
   });
-  socket.data.timer = setInterval(() => {
-    socket.data.timeLeft--;
-    io.to(socket.id).emit("timer", socket.data.timeLeft);
 
-    if (socket.data.timeLeft <= 0) {
+  // ======= Đếm ngược thời gian =======
+  let timeLeft = 30;
+  socket.emit("timer", timeLeft);
+
+  clearInterval(socket.data.timer);
+  socket.data.timer = setInterval(() => {
+    timeLeft--;
+    socket.emit("timer", timeLeft);
+
+    if (timeLeft <= 0) {
       clearInterval(socket.data.timer);
-      endGame(socket);
+      io.to(socket.id).emit("roundEnd", {
+        word: randomWord.word,
+        meaning: randomWord.meaning,
+      });
+
+      // Tự bắt đầu vòng mới sau 3s
+      setTimeout(() => startNewRound(socket), 3000);
     }
   }, 1000);
 }
 
 // ======= KẾT THÚC TRÒ CHƠI =======
-function endGame(socket) {
-  db.query("SELECT name, score FROM players ORDER BY score DESC LIMIT 10", (err, results) => {
-    if (err) return console.error(err);
+async function endGame(socket) {
+  const name = socket.data.playerName || "Unknown";
+  const score = socket.data.score || 0;
+
+  try {
+    // Lưu điểm vào bảng scores
+    await saveScore(name, score);
+
+    // Lấy top 10 người chơi
+    const topScores = await getTopScores();
+
+    // Gửi kết quả về client
     io.to(socket.id).emit("gameOver", {
-      score: socket.data.score || 0,
-      ranking: results
+      score,
+      ranking: topScores
     });
-  });
+
+    console.log(`🏁 Game over for ${name}, score: ${score}`);
+  } catch (err) {
+    console.error("❌ Error ending game:", err);
+  }
 }
-
-server.listen(3000, () =>
-  console.log("🚀 Server running at http://localhost:3000")
-);
-
+const PORT = 3000;
+server.listen(PORT, () => {
+  console.log(`🚀 Server running at http://localhost:${PORT}`);
+});
