@@ -37,7 +37,7 @@
 
     .container {
       width: 100%;
-      max-width: 500px;
+      max-width: 900px;
       background-color: white;
       border-radius: var(--border-radius);
       box-shadow: var(--box-shadow);
@@ -180,6 +180,238 @@
       color: var(--primary);
     }
 
+    /* Tab đăng nhập/đăng ký */
+    .auth-tabs {
+      display: flex;
+      width: 100%;
+      margin-bottom: 20px;
+      border-radius: var(--border-radius);
+      overflow: hidden;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 15px;
+      background: var(--light);
+      border: none;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .tab-btn.active {
+      background-color: var(--primary);
+      color: white;
+    }
+
+    .auth-form {
+      width: 100%;
+      display: none;
+    }
+
+    .auth-form.active {
+      display: block;
+    }
+
+    /* Sảnh chờ */
+    .lobby-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      width: 100%;
+    }
+
+    .room-creation, .available-rooms {
+      background-color: var(--light);
+      padding: 20px;
+      border-radius: var(--border-radius);
+    }
+
+    .rooms-list {
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .room-item {
+      background-color: white;
+      padding: 15px;
+      margin-bottom: 10px;
+      border-radius: var(--border-radius);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      transition: var(--transition);
+    }
+
+    .room-item:hover {
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .room-info {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .room-name {
+      font-weight: bold;
+    }
+
+    .room-details {
+      font-size: 14px;
+      color: var(--gray);
+    }
+
+    .join-btn {
+      width: auto;
+      padding: 8px 15px;
+    }
+
+    /* Phòng chờ */
+    .room-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      width: 100%;
+    }
+
+    .players-section, .game-info-section {
+      background-color: var(--light);
+      padding: 20px;
+      border-radius: var(--border-radius);
+    }
+
+    .players-list {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .player-item {
+      background-color: white;
+      padding: 10px 15px;
+      border-radius: var(--border-radius);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .player-avatar {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background-color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+    }
+
+    .player-host {
+      border: 2px solid gold;
+    }
+
+    #roomControls {
+      text-align: center;
+    }
+
+    #startGameMessage {
+      font-size: 14px;
+      color: var(--gray);
+      margin-top: 10px;
+    }
+
+    /* Màn hình game đa người chơi */
+    .game-content {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 20px;
+      width: 100%;
+    }
+
+    .players-panel {
+      background-color: var(--light);
+      padding: 20px;
+      border-radius: var(--border-radius);
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .game-player {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      background-color: white;
+      margin-bottom: 10px;
+      border-radius: var(--border-radius);
+    }
+
+    .game-main {
+      text-align: center;
+    }
+
+    /* Màn hình kết thúc đa người chơi */
+    .results {
+      width: 100%;
+      max-width: 500px;
+    }
+
+    .score-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px;
+      background-color: var(--light);
+      margin-bottom: 10px;
+      border-radius: var(--border-radius);
+    }
+
+    .score-item.winner {
+      background-color: #e8f5e8;
+      border: 2px solid #28a745;
+    }
+
+    .player-rank {
+      font-weight: bold;
+      width: 30px;
+      text-align: center;
+    }
+
+    .player-score {
+      font-weight: bold;
+      color: var(--primary);
+    }
+
+    .end-buttons {
+      display: flex;
+      gap: 15px;
+      width: 100%;
+      max-width: 500px;
+    }
+
+    .end-buttons button {
+      flex: 1;
+    }
+
+    @media (max-width: 768px) {
+      .lobby-content, .room-content, .game-content {
+        grid-template-columns: 1fr;
+      }
+      
+      .players-list {
+        grid-template-columns: 1fr;
+      }
+      
+      .end-buttons {
+        flex-direction: column;
+      }
+    }
+
     @media (max-width: 576px) {
       .container {
         max-width: 100%;
@@ -202,157 +434,555 @@
 </head>
 <body>
   <div class="container">
-    <!-- Màn hình đăng nhập -->
-    <div id="login" class="screen">
-      <h2>Chào mừng đến với Word Guess Game</h2>
-      <p>Nhập tên của bạn để bắt đầu chơi</p>
-      <input id="playerName" placeholder="Tên của bạn..." />
-      
-      <div class="settings">
-        <select id="gameMode">
-          <option value="normal">Chế độ Thường (Đoán Tiếng Anh)</option>
-          <option value="reverse">Chế độ Ngược (Đoán từ Tiếng Việt)</option>
-        </select>
-        <select id="wordPack">
-          <option value="words">Gói từ mặc định</option>
-          <option value="words_animals">Động vật</option>
-          <option value="words_jobs">Nghề nghiệp</option>
-        </select>
+    <!-- Màn hình đăng nhập/đăng ký -->
+    <div id="authScreen" class="screen">
+      <div class="auth-tabs">
+        <button class="tab-btn active" data-tab="login">Đăng nhập</button>
+        <button class="tab-btn" data-tab="register">Đăng ký</button>
       </div>
-      <button id="startBtn">Bắt đầu trò chơi</button>
+      
+      <div id="login" class="auth-form active">
+        <h2>Đăng nhập</h2>
+        <input id="loginUsername" placeholder="Tên đăng nhập" />
+        <input id="loginPassword" type="password" placeholder="Mật khẩu" />
+        <button id="loginBtn">Đăng nhập</button>
+      </div>
+      
+      <div id="register" class="auth-form">
+        <h2>Đăng ký tài khoản</h2>
+        <input id="registerUsername" placeholder="Tên đăng nhập" />
+        <input id="registerPassword" type="password" placeholder="Mật khẩu" />
+        <input id="registerConfirmPassword" type="password" placeholder="Xác nhận mật khẩu" />
+        <input id="registerDisplayName" placeholder="Tên hiển thị" />
+        <button id="registerBtn">Đăng ký</button>
+      </div>
+    </div>
+
+    <!-- Màn hình sảnh chờ -->
+    <div id="lobbyScreen" class="screen" style="display:none;">
+      <h1>Word Guess Game</h1>
+      <p>Xin chào, <span id="userDisplayName" class="player-name"></span>!</p>
+      
+      <div class="lobby-content">
+        <div class="room-creation">
+          <h2>Tạo phòng mới</h2>
+          <div class="settings">
+            <select id="gameMode">
+              <option value="normal">Chế độ Thường (Đoán Tiếng Anh)</option>
+              <option value="reverse">Chế độ Ngược (Đoán từ Tiếng Việt)</option>
+            </select>
+            <select id="wordPack">
+              <option value="general">Từ vựng chung</option>
+              <option value="animals">Động vật</option>
+              <option value="food">Thức ăn</option>
+              <option value="colors">Màu sắc</option>
+              <option value="family">Gia đình</option>
+              <option value="jobs">Nghề nghiệp</option>
+              <option value="school">Đồ dùng học tập</option>
+              <option value="weather">Thời tiết</option>
+            </select>
+            <select id="roomSize">
+              <option value="2">2 người chơi</option>
+              <option value="4" selected>4 người chơi</option>
+              <option value="6">6 người chơi</option>
+            </select>
+          </div>
+          <button id="createRoomBtn">Tạo phòng</button>
+        </div>
+        
+        <div class="available-rooms">
+          <h2>Phòng chờ sẵn sàng</h2>
+          <div id="roomsList" class="rooms-list">
+            <!-- Danh sách phòng sẽ được thêm động ở đây -->
+          </div>
+        </div>
+      </div>
+      
+      <button id="logoutBtn" style="width: auto; margin-top: 20px;">Đăng xuất</button>
+    </div>
+
+    <!-- Màn hình phòng chờ -->
+    <div id="roomScreen" class="screen" style="display:none;">
+      <h1>Phòng: <span id="roomName" class="player-name"></span></h1>
+      <p id="roomStatus">Đang chờ người chơi...</p>
+      
+      <div class="room-content">
+        <div class="players-section">
+          <h2>Người chơi trong phòng</h2>
+          <div id="playersList" class="players-list">
+            <!-- Danh sách người chơi sẽ được thêm động ở đây -->
+          </div>
+        </div>
+        
+        <div class="game-info-section">
+          <div class="game-settings">
+            <h3>Cài đặt trò chơi</h3>
+            <p>Chế độ: <span id="roomGameMode"></span></p>
+            <p>Gói từ: <span id="roomWordPack"></span></p>
+            <p>Số người: <span id="roomSizeDisplay"></span></p>
+          </div>
+          
+          <div id="roomControls">
+            <button id="startGameBtn" disabled>Bắt đầu trò chơi</button>
+            <p id="startGameMessage">Chỉ chủ phòng có thể bắt đầu trò chơi</p>
+          </div>
+        </div>
+      </div>
+      
+      <button id="leaveRoomBtn" style="width: auto; margin-top: 20px;">Rời phòng</button>
     </div>
 
     <!-- Màn hình chơi game -->
-    <div id="game" class="screen" style="display:none;">
+    <div id="gameScreen" class="screen" style="display:none;">
       <h1>Word Guess Game</h1>
       <div class="game-info">
         <div class="info-item">Người chơi: <span id="currentPlayer" class="player-name"></span></div>
         <div class="info-item">Chế độ: <span id="currentMode"></span></div>
       </div>
-      <img id="image" src="" alt="Gợi ý hình ảnh" />
-      <h2 id="hiddenWord"></h2>
-      <p>⏳ Thời gian còn lại: <span id="timer">30</span> giây</p>
-      <input id="guessInput" placeholder="Nhập từ của bạn..." autocomplete="off" />
-      <h3 id="message"></h3>
-      <p id="scoreDisplay">Điểm: 0</p>
+      
+      <div class="game-content">
+        <div class="players-panel">
+          <h3>Người chơi</h3>
+          <div id="gamePlayersList">
+            <!-- Danh sách người chơi trong game sẽ được thêm động ở đây -->
+          </div>
+        </div>
+        
+        <div class="game-main">
+          <img id="image" src="" alt="Gợi ý hình ảnh" />
+          <h2 id="hiddenWord"></h2>
+          <p>⏳ Thời gian còn lại: <span id="timer">30</span> giây</p>
+          <input id="guessInput" placeholder="Nhập từ của bạn..." autocomplete="off" />
+          <h3 id="message"></h3>
+          <p id="scoreDisplay">Điểm: 0</p>
+        </div>
+      </div>
     </div>
 
     <!-- Màn hình kết thúc -->
     <div id="endScreen" class="screen" style="display:none;">
-      <h2>⏰ Hết giờ!</h2>
+      <h2>⏰ Trò chơi kết thúc!</h2>
       <p>Chúc mừng <span id="endPlayer" class="player-name"></span>!</p>
-      <p id="finalScore"></p>
-      <button id="restartBtn">Chơi lại</button>
+      
+      <div class="results">
+        <h3>Kết quả</h3>
+        <div id="finalScores">
+          <!-- Bảng xếp hạng sẽ được thêm động ở đây -->
+        </div>
+      </div>
+      
+      <div class="end-buttons">
+        <button id="backToLobbyBtn">Về sảnh chờ</button>
+        <button id="playAgainBtn">Chơi lại</button>
+      </div>
     </div>
   </div>
 
-  <script src="/socket.io/socket.io.js"></script>
   <script>
-    // JavaScript cơ bản để minh họa chức năng
-    document.addEventListener('DOMContentLoaded', function() {
-      const loginScreen = document.getElementById('login');
-      const gameScreen = document.getElementById('game');
-      const endScreen = document.getElementById('endScreen');
-      const startBtn = document.getElementById('startBtn');
-      const restartBtn = document.getElementById('restartBtn');
-      const playerNameInput = document.getElementById('playerName');
-      const currentPlayerSpan = document.getElementById('currentPlayer');
-      const endPlayerSpan = document.getElementById('endPlayer');
-      const currentModeSpan = document.getElementById('currentMode');
-      const gameModeSelect = document.getElementById('gameMode');
-      const scoreDisplay = document.getElementById('scoreDisplay');
-      const finalScore = document.getElementById('finalScore');
+    // Biến toàn cục
+    let currentUser = null;
+    let currentRoom = null;
+    let socket = null;
+    let gameData = {
+      score: 0,
+      timer: null,
+      timeLeft: 30,
+      currentWord: null,
+      usedWords: []
+    };
+
+    // Kết nối Socket.IO
+    function connectSocket() {
+      socket = io();
+      
+      socket.on('connect', () => {
+        console.log('Kết nối thành công với server');
+      });
+      
+      socket.on('roomListUpdate', (rooms) => {
+        updateRoomList(rooms);
+      });
+      
+      socket.on('playerJoined', (data) => {
+        updatePlayerList(data.players);
+      });
+      
+      socket.on('playerLeft', (data) => {
+        updatePlayerList(data.players);
+      });
+      
+      socket.on('gameStarted', (data) => {
+        startGame(data);
+      });
+      
+      socket.on('wordUpdate', (data) => {
+        updateGameWord(data);
+      });
+      
+      socket.on('scoreUpdate', (data) => {
+        updateScores(data.players);
+      });
+      
+      socket.on('gameEnded', (data) => {
+        endGame(data);
+      });
+    }
+
+    // Cập nhật danh sách phòng
+    function updateRoomList(rooms) {
+      const roomsList = document.getElementById('roomsList');
+      roomsList.innerHTML = '';
+      
+      if (rooms.length === 0) {
+        roomsList.innerHTML = '<p>Không có phòng nào đang chờ</p>';
+        return;
+      }
+      
+      rooms.forEach(room => {
+        const roomItem = document.createElement('div');
+        roomItem.className = 'room-item';
+        roomItem.innerHTML = `
+          <div class="room-info">
+            <div class="room-name">${room.name}</div>
+            <div class="room-details">${room.mode} • ${room.players.length}/${room.maxPlayers} người</div>
+          </div>
+          <button class="join-btn" onclick="joinRoom('${room.id}')">Tham gia</button>
+        `;
+        roomsList.appendChild(roomItem);
+      });
+    }
+
+    // Cập nhật danh sách người chơi
+    function updatePlayerList(players) {
+      const playersList = document.getElementById('playersList');
+      const gamePlayersList = document.getElementById('gamePlayersList');
+      
+      playersList.innerHTML = '';
+      gamePlayersList.innerHTML = '';
+      
+      players.forEach((player, index) => {
+        // Cho phòng chờ
+        const playerItem = document.createElement('div');
+        playerItem.className = `player-item ${player.isHost ? 'player-host' : ''}`;
+        playerItem.innerHTML = `
+          <div class="player-avatar">${player.name.charAt(0)}</div>
+          <div>${player.name} ${player.isHost ? '(Chủ phòng)' : ''}</div>
+        `;
+        playersList.appendChild(playerItem);
+        
+        // Cho game
+        const gamePlayer = document.createElement('div');
+        gamePlayer.className = 'game-player';
+        gamePlayer.innerHTML = `
+          <span>${player.name}</span>
+          <span class="player-score">${player.score || 0} điểm</span>
+        `;
+        gamePlayersList.appendChild(gamePlayer);
+      });
+    }
+
+    // Cập nhật điểm số
+    function updateScores(players) {
+      const gamePlayersList = document.getElementById('gamePlayersList');
+      gamePlayersList.innerHTML = '';
+      
+      players.forEach(player => {
+        const gamePlayer = document.createElement('div');
+        gamePlayer.className = 'game-player';
+        gamePlayer.innerHTML = `
+          <span>${player.name}</span>
+          <span class="player-score">${player.score} điểm</span>
+        `;
+        gamePlayersList.appendChild(gamePlayer);
+      });
+    }
+
+    // Bắt đầu game
+    function startGame(data) {
+      document.getElementById('roomScreen').style.display = 'none';
+      document.getElementById('gameScreen').style.display = 'flex';
+      
+      gameData.score = 0;
+      gameData.timeLeft = 30;
+      document.getElementById('scoreDisplay').textContent = 'Điểm: 0';
+      document.getElementById('timer').textContent = gameData.timeLeft;
+      
+      // Hiển thị từ đầu tiên
+      updateGameWord(data.currentWord);
+      
+      // Bắt đầu đếm ngược
+      startTimer();
+    }
+
+    // Cập nhật từ trong game
+    function updateGameWord(wordData) {
+      gameData.currentWord = wordData;
+      
+      const hiddenWord = document.getElementById('hiddenWord');
+      const image = document.getElementById('image');
       const message = document.getElementById('message');
       
-      let score = 0;
-      let timer;
-      let timeLeft = 30;
+      // Tạo từ ẩn (thay thế ký tự bằng dấu gạch dưới)
+      const hidden = wordData.word.split('').map(char => 
+        char === ' ' ? ' ' : '_'
+      ).join(' ');
       
-      // Xử lý bắt đầu game
-      startBtn.addEventListener('click', function() {
-        const playerName = playerNameInput.value.trim();
-        if (!playerName) {
-          alert('Vui lòng nhập tên của bạn!');
+      hiddenWord.textContent = hidden;
+      image.src = wordData.image;
+      message.textContent = '';
+      
+      // Focus vào input
+      document.getElementById('guessInput').value = '';
+      document.getElementById('guessInput').focus();
+    }
+
+    // Bắt đầu đếm ngược
+    function startTimer() {
+      clearInterval(gameData.timer);
+      
+      gameData.timer = setInterval(() => {
+        gameData.timeLeft--;
+        document.getElementById('timer').textContent = gameData.timeLeft;
+        
+        if (gameData.timeLeft <= 0) {
+          clearInterval(gameData.timer);
+          socket.emit('timeUp', { roomId: currentRoom.id });
+        }
+      }, 1000);
+    }
+
+    // Kết thúc game
+    function endGame(data) {
+      clearInterval(gameData.timer);
+      
+      document.getElementById('gameScreen').style.display = 'none';
+      document.getElementById('endScreen').style.display = 'flex';
+      
+      const finalScores = document.getElementById('finalScores');
+      finalScores.innerHTML = '';
+      
+      // Sắp xếp người chơi theo điểm
+      const sortedPlayers = [...data.players].sort((a, b) => b.score - a.score);
+      
+      sortedPlayers.forEach((player, index) => {
+        const scoreItem = document.createElement('div');
+        scoreItem.className = `score-item ${index === 0 ? 'winner' : ''}`;
+        scoreItem.innerHTML = `
+          <div class="player-rank">${index + 1}</div>
+          <div>${player.name}</div>
+          <div class="player-score">${player.score} điểm</div>
+        `;
+        finalScores.appendChild(scoreItem);
+      });
+    }
+
+    // Xử lý sự kiện khi DOM đã tải xong
+    document.addEventListener('DOMContentLoaded', function() {
+      connectSocket();
+      
+      const authScreen = document.getElementById('authScreen');
+      const lobbyScreen = document.getElementById('lobbyScreen');
+      const roomScreen = document.getElementById('roomScreen');
+      const gameScreen = document.getElementById('gameScreen');
+      const endScreen = document.getElementById('endScreen');
+      
+      const tabBtns = document.querySelectorAll('.tab-btn');
+      const authForms = document.querySelectorAll('.auth-form');
+      
+      // Xử lý tab đăng nhập/đăng ký
+      tabBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+          const tab = this.getAttribute('data-tab');
+          
+          tabBtns.forEach(b => b.classList.remove('active'));
+          authForms.forEach(f => f.classList.remove('active'));
+          
+          this.classList.add('active');
+          document.getElementById(tab).classList.add('active');
+        });
+      });
+      
+      // Xử lý đăng nhập
+      document.getElementById('loginBtn').addEventListener('click', function() {
+        const username = document.getElementById('loginUsername').value.trim();
+        const password = document.getElementById('loginPassword').value.trim();
+        
+        if (!username || !password) {
+          alert('Vui lòng nhập đầy đủ thông tin!');
           return;
         }
         
-        // Hiển thị thông tin người chơi
-        currentPlayerSpan.textContent = playerName;
-        endPlayerSpan.textContent = playerName;
+        // Gửi yêu cầu đăng nhập đến server
+        fetch('/api/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ username, password })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            currentUser = data.user;
+            document.getElementById('userDisplayName').textContent = currentUser.name;
+            document.getElementById('currentPlayer').textContent = currentUser.name;
+            document.getElementById('endPlayer').textContent = currentUser.name;
+            
+            authScreen.style.display = 'none';
+            lobbyScreen.style.display = 'flex';
+            
+            // Thông báo đăng nhập thành công cho socket
+            if (socket) {
+              socket.emit('userLogin', currentUser);
+            }
+          } else {
+            alert(data.message || 'Đăng nhập thất bại!');
+          }
+        })
+        .catch(error => {
+          console.error('Lỗi đăng nhập:', error);
+          alert('Có lỗi xảy ra khi đăng nhập!');
+        });
+      });
+      
+      // Xử lý đăng ký
+      document.getElementById('registerBtn').addEventListener('click', function() {
+        const username = document.getElementById('registerUsername').value.trim();
+        const password = document.getElementById('registerPassword').value.trim();
+        const confirmPassword = document.getElementById('registerConfirmPassword').value.trim();
+        const displayName = document.getElementById('registerDisplayName').value.trim();
         
-        // Hiển thị chế độ chơi
-        const selectedMode = gameModeSelect.options[gameModeSelect.selectedIndex].text;
-        currentModeSpan.textContent = selectedMode;
+        if (!username || !password || !confirmPassword || !displayName) {
+          alert('Vui lòng nhập đầy đủ thông tin!');
+          return;
+        }
         
-        // Chuyển màn hình
-        loginScreen.style.display = 'none';
-        gameScreen.style.display = 'flex';
+        if (password !== confirmPassword) {
+          alert('Mật khẩu xác nhận không khớp!');
+          return;
+        }
         
-        // Bắt đầu game
-        startGame();
+        // Gửi yêu cầu đăng ký đến server
+        fetch('/api/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ username, password, displayName })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            alert('Đăng ký thành công! Vui lòng đăng nhập.');
+            // Chuyển sang tab đăng nhập
+            document.querySelector('[data-tab="login"]').click();
+            document.getElementById('loginUsername').value = username;
+          } else {
+            alert(data.message || 'Đăng ký thất bại!');
+          }
+        })
+        .catch(error => {
+          console.error('Lỗi đăng ký:', error);
+          alert('Có lỗi xảy ra khi đăng ký!');
+        });
+      });
+      
+      // Xử lý tạo phòng
+      document.getElementById('createRoomBtn').addEventListener('click', function() {
+        const gameMode = document.getElementById('gameMode').value;
+        const wordPack = document.getElementById('wordPack').value;
+        const roomSize = document.getElementById('roomSize').value;
+        
+        if (socket && currentUser) {
+          socket.emit('createRoom', {
+            host: currentUser,
+            mode: gameMode,
+            wordPack: wordPack,
+            maxPlayers: parseInt(roomSize)
+          });
+        }
+      });
+      
+      // Xử lý bắt đầu game
+      document.getElementById('startGameBtn').addEventListener('click', function() {
+        if (socket && currentRoom) {
+          socket.emit('startGame', { roomId: currentRoom.id });
+        }
+      });
+      
+      // Xử lý rời phòng
+      document.getElementById('leaveRoomBtn').addEventListener('click', function() {
+        if (socket && currentRoom) {
+          socket.emit('leaveRoom', { roomId: currentRoom.id });
+          currentRoom = null;
+          roomScreen.style.display = 'none';
+          lobbyScreen.style.display = 'flex';
+        }
+      });
+      
+      // Xử lý về sảnh chờ
+      document.getElementById('backToLobbyBtn').addEventListener('click', function() {
+        if (socket && currentRoom) {
+          socket.emit('leaveRoom', { roomId: currentRoom.id });
+          currentRoom = null;
+        }
+        endScreen.style.display = 'none';
+        lobbyScreen.style.display = 'flex';
       });
       
       // Xử lý chơi lại
-      restartBtn.addEventListener('click', function() {
+      document.getElementById('playAgainBtn').addEventListener('click', function() {
+        if (socket && currentRoom) {
+          socket.emit('playAgain', { roomId: currentRoom.id });
+        }
         endScreen.style.display = 'none';
-        loginScreen.style.display = 'flex';
-        score = 0;
-        timeLeft = 30;
-        document.getElementById('timer').textContent = timeLeft;
-        scoreDisplay.textContent = 'Điểm: 0';
-        message.textContent = '';
+        roomScreen.style.display = 'flex';
       });
       
-      // Hàm bắt đầu game
-      function startGame() {
-        // Đặt lại thời gian
-        timeLeft = 30;
-        document.getElementById('timer').textContent = timeLeft;
-        
-        // Bắt đầu đếm ngược
-        timer = setInterval(function() {
-          timeLeft--;
-          document.getElementById('timer').textContent = timeLeft;
+      // Xử lý đăng xuất
+      document.getElementById('logoutBtn').addEventListener('click', function() {
+        if (socket && currentRoom) {
+          socket.emit('leaveRoom', { roomId: currentRoom.id });
+        }
+        currentUser = null;
+        currentRoom = null;
+        lobbyScreen.style.display = 'none';
+        authScreen.style.display = 'flex';
+      });
+      
+      // Xử lý đoán từ
+      document.getElementById('guessInput').addEventListener('keyup', function(event) {
+        if (event.key === 'Enter' && socket && currentRoom && gameData.currentWord) {
+          const guess = this.value.trim().toLowerCase();
           
-          if (timeLeft <= 0) {
-            clearInterval(timer);
-            endGame();
+          if (guess) {
+            socket.emit('makeGuess', {
+              roomId: currentRoom.id,
+              word: gameData.currentWord.word,
+              guess: guess
+            });
           }
-        }, 1000);
-        
-        // Hiển thị từ mẫu
-        document.getElementById('hiddenWord').textContent = "_ _ _ _ _";
-        document.getElementById('guessInput').value = '';
-        document.getElementById('guessInput').focus();
-        
-        // Xử lý đoán từ
-        document.getElementById('guessInput').addEventListener('keyup', function(event) {
-          if (event.key === 'Enter') {
-            const guess = this.value.trim().toLowerCase();
-            if (guess === 'hello') { // Từ mẫu để minh họa
-              message.textContent = 'Chính xác! +10 điểm';
-              message.className = 'correct';
-              score += 10;
-              scoreDisplay.textContent = `Điểm: ${score}`;
-              this.value = '';
-              
-              // Hiển thị từ mới
-              document.getElementById('hiddenWord').textContent = "_ _ _ _ _ _";
-            } else if (guess) {
-              message.textContent = 'Sai rồi, thử lại!';
-              message.className = 'incorrect';
-            }
-          }
+        }
+      });
+    });
+
+    // Hàm tham gia phòng
+    function joinRoom(roomId) {
+      if (socket && currentUser) {
+        socket.emit('joinRoom', {
+          roomId: roomId,
+          player: currentUser
         });
       }
-      
-      // Hàm kết thúc game
-      function endGame() {
-        gameScreen.style.display = 'none';
-        endScreen.style.display = 'flex';
-        finalScore.textContent = `Điểm cuối cùng: ${score}`;
-      }
-    });
+    }
+
+    // Socket event handlers
+    if (typeof io !== 'undefined') {
+      // Đã kết nối socket ở trên
+    }
   </script>
+  
+  <!-- Socket.IO client library -->
+  <script src="/socket.io/socket.io.js"></script>
 </body>
 </html>
