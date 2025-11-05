@@ -320,6 +320,7 @@
           }
         }, 1000);
         
+        // Hiển thị từ mẫu (trong thực tế sẽ lấy từ server)
         document.getElementById('hiddenWord').textContent = "_ _ _ _ _";
         document.getElementById('guessInput').value = '';
         document.getElementById('guessInput').focus();
@@ -335,7 +336,7 @@
               scoreDisplay.textContent = `Điểm: ${score}`;
               this.value = '';
               
-              // Hiển thị từ mới
+              // Hiển thị từ mới (trong thực tế sẽ lấy từ server)
               document.getElementById('hiddenWord').textContent = "_ _ _ _ _ _";
             } else if (guess) {
               message.textContent = 'Sai rồi, thử lại!';
