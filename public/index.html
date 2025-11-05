@@ -1,46 +1,357 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
   <meta charset="UTF-8" />
-  <title>Word Guess Game</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Word Guess Game - Trò chơi đoán từ</title>
+  <style>
+    :root {
+      --primary: #4361ee;
+      --secondary: #3a0ca3;
+      --success: #4cc9f0;
+      --danger: #f72585;
+      --light: #f8f9fa;
+      --dark: #212529;
+      --gray: #6c757d;
+      --border-radius: 12px;
+      --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      --transition: all 0.3s ease;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      color: var(--dark);
+    }
+
+    .container {
+      width: 100%;
+      max-width: 500px;
+      background-color: white;
+      border-radius: var(--border-radius);
+      box-shadow: var(--box-shadow);
+      overflow: hidden;
+      transition: var(--transition);
+    }
+
+    .screen {
+      padding: 30px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    h1, h2, h3 {
+      margin-bottom: 20px;
+      color: var(--secondary);
+    }
+
+    h1 {
+      font-size: 28px;
+    }
+
+    h2 {
+      font-size: 22px;
+    }
+
+    p {
+      margin-bottom: 15px;
+      line-height: 1.5;
+    }
+
+    input, select, button {
+      width: 100%;
+      padding: 12px 15px;
+      margin-bottom: 15px;
+      border: 1px solid #ddd;
+      border-radius: var(--border-radius);
+      font-size: 16px;
+      transition: var(--transition);
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+    }
+
+    button {
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    button:hover {
+      background-color: var(--secondary);
+      transform: translateY(-2px);
+    }
+
+    .settings {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      margin: 20px 0;
+    }
+
+    .settings select {
+      margin-bottom: 10px;
+    }
+
+    #image {
+      max-width: 100%;
+      height: auto;
+      border-radius: var(--border-radius);
+      margin: 20px 0;
+      box-shadow: var(--box-shadow);
+    }
+
+    #hiddenWord {
+      font-size: 32px;
+      letter-spacing: 8px;
+      margin: 20px 0;
+      font-weight: bold;
+      color: var(--secondary);
+      text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    #timer {
+      font-weight: bold;
+      color: var(--danger);
+      font-size: 20px;
+    }
+
+    #message {
+      min-height: 24px;
+      margin: 15px 0;
+      font-weight: 500;
+    }
+
+    .correct {
+      color: #28a745;
+    }
+
+    .incorrect {
+      color: var(--danger);
+    }
+
+    #scoreDisplay {
+      font-size: 18px;
+      font-weight: bold;
+      color: var(--primary);
+    }
+
+    #finalScore {
+      font-size: 24px;
+      font-weight: bold;
+      color: var(--primary);
+      margin: 20px 0;
+    }
+
+    .game-info {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      margin-bottom: 20px;
+    }
+
+    .info-item {
+      background-color: var(--light);
+      padding: 10px 15px;
+      border-radius: var(--border-radius);
+      font-weight: 500;
+    }
+
+    .player-name {
+      color: var(--primary);
+    }
+
+    @media (max-width: 576px) {
+      .container {
+        max-width: 100%;
+      }
+      
+      .screen {
+        padding: 20px;
+      }
+      
+      h1 {
+        font-size: 24px;
+      }
+      
+      #hiddenWord {
+        font-size: 24px;
+        letter-spacing: 5px;
+      }
+    }
+  </style>
 </head>
 <body>
-    <div id="login">
-        <h2>Enter your name:</h2>
-        <input id="playerName" placeholder="Your name..." />
-
-    <div class="settings">
-      <select id="gameMode">
-        <option value="normal">Chế độ Thường (Đoán Tiếng Anh)</option>
-        <option value="reverse">Chế độ Ngược (Đoán từ Tiếng Việt)</option>
-      </select>
-      <select id="wordPack">
-        <option value="words">Mặc định</option>
-        <option value="words_animals">Động vật</option>
-        <option value="words_jobs">Nghề nghiệp</option>
-      </select>
+  <div class="container">
+    <!-- Màn hình đăng nhập -->
+    <div id="login" class="screen">
+      <h2>Chào mừng đến với Word Guess Game</h2>
+      <p>Nhập tên của bạn để bắt đầu chơi</p>
+      <input id="playerName" placeholder="Tên của bạn..." />
+      
+      <div class="settings">
+        <select id="gameMode">
+          <option value="normal">Chế độ Thường (Đoán Tiếng Anh)</option>
+          <option value="reverse">Chế độ Ngược (Đoán từ Tiếng Việt)</option>
+        </select>
+        <select id="wordPack">
+          <option value="words">Gói từ mặc định</option>
+          <option value="words_animals">Động vật</option>
+          <option value="words_jobs">Nghề nghiệp</option>
+        </select>
+      </div>
+      <button id="startBtn">Bắt đầu trò chơi</button>
     </div>
-    <button id="startBtn">Start Game</button>
-  </div>
 
-  <div id="game" style="display:none;">
-    <h1>Word Guess Game</h1>
-    <img id="image" src="" width="250" />
-    <h2 id="hiddenWord"></h2>
-    <p>⏳ Time left: <span id="timer">30</span>s</p>
-    <input id="guessInput" placeholder="Enter the word..." />
-    <h3 id="message"></h3>
-    <p id="scoreDisplay"></p>
-  </div>
+    <!-- Màn hình chơi game -->
+    <div id="game" class="screen" style="display:none;">
+      <h1>Word Guess Game</h1>
+      <div class="game-info">
+        <div class="info-item">Người chơi: <span id="currentPlayer" class="player-name"></span></div>
+        <div class="info-item">Chế độ: <span id="currentMode"></span></div>
+      </div>
+      <img id="image" src="" alt="Gợi ý hình ảnh" />
+      <h2 id="hiddenWord"></h2>
+      <p>⏳ Thời gian còn lại: <span id="timer">30</span> giây</p>
+      <input id="guessInput" placeholder="Nhập từ của bạn..." autocomplete="off" />
+      <h3 id="message"></h3>
+      <p id="scoreDisplay">Điểm: 0</p>
+    </div>
 
-  <div id="endScreen" style="display:none;">
-    <h2>⏰ Time’s up!</h2>
-    <p id="finalScore"></p>
-    <button id="restartBtn">Play Again</button>
+    <!-- Màn hình kết thúc -->
+    <div id="endScreen" class="screen" style="display:none;">
+      <h2>⏰ Hết giờ!</h2>
+      <p>Chúc mừng <span id="endPlayer" class="player-name"></span>!</p>
+      <p id="finalScore"></p>
+      <button id="restartBtn">Chơi lại</button>
+    </div>
   </div>
 
   <script src="/socket.io/socket.io.js"></script>
-  <script src="main.js"></script>
+  <script>
+    // JavaScript cơ bản để minh họa chức năng
+    document.addEventListener('DOMContentLoaded', function() {
+      const loginScreen = document.getElementById('login');
+      const gameScreen = document.getElementById('game');
+      const endScreen = document.getElementById('endScreen');
+      const startBtn = document.getElementById('startBtn');
+      const restartBtn = document.getElementById('restartBtn');
+      const playerNameInput = document.getElementById('playerName');
+      const currentPlayerSpan = document.getElementById('currentPlayer');
+      const endPlayerSpan = document.getElementById('endPlayer');
+      const currentModeSpan = document.getElementById('currentMode');
+      const gameModeSelect = document.getElementById('gameMode');
+      const scoreDisplay = document.getElementById('scoreDisplay');
+      const finalScore = document.getElementById('finalScore');
+      const message = document.getElementById('message');
+      
+      let score = 0;
+      let timer;
+      let timeLeft = 30;
+      
+      // Xử lý bắt đầu game
+      startBtn.addEventListener('click', function() {
+        const playerName = playerNameInput.value.trim();
+        if (!playerName) {
+          alert('Vui lòng nhập tên của bạn!');
+          return;
+        }
+        
+        // Hiển thị thông tin người chơi
+        currentPlayerSpan.textContent = playerName;
+        endPlayerSpan.textContent = playerName;
+        
+        // Hiển thị chế độ chơi
+        const selectedMode = gameModeSelect.options[gameModeSelect.selectedIndex].text;
+        currentModeSpan.textContent = selectedMode;
+        
+        // Chuyển màn hình
+        loginScreen.style.display = 'none';
+        gameScreen.style.display = 'flex';
+        
+        // Bắt đầu game
+        startGame();
+      });
+      
+      // Xử lý chơi lại
+      restartBtn.addEventListener('click', function() {
+        endScreen.style.display = 'none';
+        loginScreen.style.display = 'flex';
+        score = 0;
+        timeLeft = 30;
+        document.getElementById('timer').textContent = timeLeft;
+        scoreDisplay.textContent = 'Điểm: 0';
+        message.textContent = '';
+      });
+      
+      // Hàm bắt đầu game
+      function startGame() {
+        // Đặt lại thời gian
+        timeLeft = 30;
+        document.getElementById('timer').textContent = timeLeft;
+        
+        // Bắt đầu đếm ngược
+        timer = setInterval(function() {
+          timeLeft--;
+          document.getElementById('timer').textContent = timeLeft;
+          
+          if (timeLeft <= 0) {
+            clearInterval(timer);
+            endGame();
+          }
+        }, 1000);
+        
+        document.getElementById('hiddenWord').textContent = "_ _ _ _ _";
+        document.getElementById('guessInput').value = '';
+        document.getElementById('guessInput').focus();
+        
+        // Xử lý đoán từ
+        document.getElementById('guessInput').addEventListener('keyup', function(event) {
+          if (event.key === 'Enter') {
+            const guess = this.value.trim().toLowerCase();
+            if (guess === 'hello') { // Từ mẫu để minh họa
+              message.textContent = 'Chính xác! +10 điểm';
+              message.className = 'correct';
+              score += 10;
+              scoreDisplay.textContent = `Điểm: ${score}`;
+              this.value = '';
+              
+              // Hiển thị từ mới
+              document.getElementById('hiddenWord').textContent = "_ _ _ _ _ _";
+            } else if (guess) {
+              message.textContent = 'Sai rồi, thử lại!';
+              message.className = 'incorrect';
+            }
+          }
+        });
+      }
+      
+      // Hàm kết thúc game
+      function endGame() {
+        gameScreen.style.display = 'none';
+        endScreen.style.display = 'flex';
+        finalScore.textContent = `Điểm cuối cùng: ${score}`;
+      }
+    });
+  </script>
 </body>
 </html>
