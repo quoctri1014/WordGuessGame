@@ -1,10 +1,8 @@
 // scoreService.js
-import db from "./db.js"; // db là pool từ mysql2/promise
+import db from "./db.js";
 
 /**
- * Lưu điểm của người chơi vào bảng scores
- * @param {number} userId - ID của người chơi
- * @param {number} score - điểm đạt được
+ * Lưu điểm người chơi
  */
 export async function saveScore(userId, score) {
   try {
@@ -22,8 +20,6 @@ export async function saveScore(userId, score) {
 
 /**
  * Lấy top N điểm cao nhất
- * @param {number} limit - số lượng top muốn lấy (mặc định 10)
- * @returns {Array} mảng object { username, score }
  */
 export async function getTopScores(limit = 10) {
   try {
@@ -35,7 +31,6 @@ export async function getTopScores(limit = 10) {
        LIMIT ?`,
       [limit]
     );
-    // Thêm rank để client hiển thị dễ hơn
     return rows.map((item, index) => ({ ...item, rank: index + 1 }));
   } catch (err) {
     console.error("❌ getTopScores error:", err);
