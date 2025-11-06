@@ -49,6 +49,57 @@ body {
   transition: var(--transition);
 }
 
+/* Header chung */
+.header, .game-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 30px;
+  background-color: var(--primary);
+  color: white;
+}
+
+.header h1, .game-header h1 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.user-info, .room-info, .game-stats {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+/* Tab đăng nhập/đăng ký */
+.auth-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--gray-light);
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 15px;
+  background: none;
+  border: none;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.tab-btn.active {
+  background-color: var(--primary);
+  color: white;
+}
+
+.auth-form {
+  padding: 30px;
+  display: none;
+}
+
+.auth-form.active {
+  display: block;
+}
 
 /* Form elements */
 input, select, button {

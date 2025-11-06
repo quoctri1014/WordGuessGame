@@ -269,7 +269,62 @@
       padding: 8px 15px;
     }
 
-    
+    /* Phòng chờ */
+    .room-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      width: 100%;
+    }
+
+    .players-section, .game-info-section {
+      background-color: var(--light);
+      padding: 20px;
+      border-radius: var(--border-radius);
+    }
+
+    .players-list {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .player-item {
+      background-color: white;
+      padding: 10px 15px;
+      border-radius: var(--border-radius);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .player-avatar {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background-color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+    }
+
+    .player-host {
+      border: 2px solid gold;
+    }
+
+    #roomControls {
+      text-align: center;
+    }
+
+    #startGameMessage {
+      font-size: 14px;
+      color: var(--gray);
+      margin-top: 10px;
+    }
+
     /* Màn hình game đa người chơi */
     .game-content {
       display: grid;
