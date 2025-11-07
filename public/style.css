@@ -76,27 +76,6 @@ body {
   border-bottom: 1px solid var(--gray-light);
 }
 
-.tab-btn {
-  flex: 1;
-  padding: 15px;
-  background: none;
-  border: none;
-  font-size: 16px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: var(--transition);
-}
-
-.tab-btn.active {
-  background-color: var(--primary);
-  color: white;
-}
-
-.auth-form {
-  padding: 30px;
-  display: none;
-}
-
 .auth-form.active {
   display: block;
 }
