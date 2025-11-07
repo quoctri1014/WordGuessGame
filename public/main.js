@@ -5,7 +5,25 @@ let currentGameMode = "normal";
 let currentWordPack = "words";
 let timerInterval;
 
+const loginDiv = document.getElementById("login");
+const gameDiv = document.getElementById("game");
+const endScreen = document.getElementById("endScreen");
+const startBtn = document.getElementById("startBtn");
+const restartBtn = document.getElementById("restartBtn");
 
+const playerNameInput = document.getElementById("playerName");
+const imageEl = document.getElementById("image");
+const hiddenWordEl = document.getElementById("hiddenWord");
+const timerEl = document.getElementById("timer");
+const messageEl = document.getElementById("message");
+const guessInput = document.getElementById("guessInput");
+const scoreDisplay = document.getElementById("scoreDisplay");
+const finalScore = document.getElementById("finalScore");
+
+const gameModeSelect = document.getElementById("gameMode");
+const wordPackSelect = document.getElementById("wordPack");
+
+// Bắt đầu trò chơi
 startBtn.onclick = () => {
   playerName = playerNameInput.value.trim();
   if (!playerName) return alert("Please enter your name!");
