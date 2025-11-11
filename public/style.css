@@ -1,161 +1,394 @@
-body {
-  font-family: 'Segoe UI', sans-serif;
-  text-align: center;
-  background: #f0f8ff;
+/* style.css */
+:root {
+  --primary: #4361ee;
+  --primary-dark: #3a0ca3;
+  --secondary: #4cc9f0;
+  --success: #4ade80;
+  --warning: #f59e0b;
+  --danger: #f72585;
+  --light: #f8f9fa;
+  --dark: #212529;
+  --gray: #6c757d;
+  --gray-light: #e9ecef;
+  --border-radius: 12px;
+  --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --transition: all 0.3s ease;
+}
+
+* {
   margin: 0;
   padding: 0;
-  color: #333;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-#login, #game, #endScreen {
-  margin: 40px auto;
-  max-width: 800px;
+body {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   padding: 20px;
+  color: var(--dark);
 }
 
-input, button {
-  padding: 12px 20px;
+.screen {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.container {
+  width: 100%;
+  max-width: 900px;
+  background-color: white;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  overflow: hidden;
+  transition: var(--transition);
+}
+
+/* Header chung */
+.header, .game-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 30px;
+  background-color: var(--primary);
+  color: white;
+}
+
+.header h1, .game-header h1 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.user-info, .room-info, .game-stats {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+/* Tab đăng nhập/đăng ký */
+.auth-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--gray-light);
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 15px;
+  background: none;
+  border: none;
   font-size: 16px;
-  border-radius: 5px;
-  border: 1px solid #ddd;
-  margin: 5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition);
 }
 
-input:focus {
+.tab-btn.active {
+  background-color: var(--primary);
+  color: white;
+}
+
+.auth-form {
+  padding: 30px;
+  display: none;
+}
+
+.auth-form.active {
+  display: block;
+}
+
+/* Form elements */
+input, select, button {
+  width: 100%;
+  padding: 12px 15px;
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  border-radius: var(--border-radius);
+  font-size: 16px;
+  transition: var(--transition);
+}
+
+input:focus, select:focus {
   outline: none;
-  border-color: #007bff;
-  box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
 }
 
 button {
-  background: #007bff;
+  background-color: var(--primary);
   color: white;
   border: none;
   cursor: pointer;
-  transition: background-color 0.2s;
+  font-weight: 600;
+  letter-spacing: 0.5px;
 }
 
 button:hover {
-  background: #0056b3;
+  background-color: var(--primary-dark);
+  transform: translateY(-2px);
 }
 
 button:disabled {
-  background: #ccc;
+  background-color: var(--gray);
   cursor: not-allowed;
+  transform: none;
 }
 
-#message {
-  font-weight: bold;
-  margin: 20px 0;
-  padding: 15px;
-  border-radius: 8px;
-  background: #f8f9fa;
+/* Sảnh chờ */
+.lobby-content {
+  padding: 30px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+}
+
+.room-creation, .available-rooms {
+  background-color: var(--light);
+  padding: 20px;
+  border-radius: var(--border-radius);
 }
 
 .settings {
+  display: flex;
+  flex-direction: column;
   margin: 20px 0;
-  padding: 15px;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .settings select {
-  padding: 10px;
-  font-size: 14px;
-  margin: 0 10px;
-  border-radius: 5px;
-  border: 1px solid #ddd;
-  background: white;
-  cursor: pointer;
+  margin-bottom: 10px;
 }
 
-/* Hangman specific styles */
-.hangman-info {
-  margin: 20px auto;
-  max-width: 600px;
-  padding: 20px;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+.rooms-list {
+  max-height: 300px;
+  overflow-y: auto;
 }
 
-.letter-box {
-  display: inline-block;
-  width: 40px;
-  height: 40px;
-  border: 2px solid #007bff;
-  margin: 0 5px;
-  line-height: 40px;
-  text-align: center;
-  font-size: 24px;
+.room-item {
+  background-color: white;
+  padding: 15px;
+  margin-bottom: 10px;
+  border-radius: var(--border-radius);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  transition: var(--transition);
+}
+
+.room-item:hover {
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.room-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.room-name {
   font-weight: bold;
-  border-radius: 4px;
-  text-transform: uppercase;
-  transition: all 0.3s ease;
 }
 
-.correct-letter {
-  background: #d4edda;
-  color: #28a745;
-  border-color: #28a745;
+.room-details {
+  font-size: 14px;
+  color: var(--gray);
 }
 
-.wrong-letter {
-  background: #f8d7da;
-  color: #dc3545;
-  border-color: #dc3545;
+.join-btn {
+  width: auto;
+  padding: 8px 15px;
 }
 
-.guessed-letters {
-  margin: 15px 0;
+/* Phòng chờ */
+.room-content {
+  padding: 30px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
 }
 
+.players-section, .game-info-section {
+  background-color: var(--light);
+  padding: 20px;
+  border-radius: var(--border-radius);
+}
 
-#hiddenWord {
-  font-size: 2.5em;
-  letter-spacing: 5px;
-  margin: 30px 0;
-  min-height: 60px;
+.players-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.player-item {
+  background-color: white;
+  padding: 10px 15px;
+  border-radius: var(--border-radius);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.player-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+}
+
+.player-host {
+  border: 2px solid var(--warning);
+}
+
+.game-settings {
+  margin-bottom: 20px;
+}
+
+#roomControls {
+  text-align: center;
+}
+
+#startGameMessage {
+  font-size: 14px;
+  color: var(--gray);
+  margin-top: 10px;
+}
+
+/* Màn hình game */
+.game-content {
+  padding: 30px;
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 30px;
+}
+
+.players-panel {
+  background-color: var(--light);
+  padding: 20px;
+  border-radius: var(--border-radius);
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.game-player {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  background-color: white;
+  margin-bottom: 10px;
+  border-radius: var(--border-radius);
+}
+
+.game-main {
+  text-align: center;
 }
 
 #image {
-  max-width: 300px;
+  max-width: 100%;
   height: auto;
-  margin: 20px auto;
-  border-radius: 12px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-  transition: transform 0.3s ease;
-}
-
-#image:hover {
-  transform: scale(1.05);
-}
-
-#scoreDisplay {
-  font-size: 1.3em;
+  border-radius: var(--border-radius);
   margin: 20px 0;
-  padding: 10px 20px;
-  background: #e9ecef;
-  border-radius: 25px;
-  display: inline-block;
+  box-shadow: var(--box-shadow);
+  max-height: 250px;
+  object-fit: cover;
+}
+
+#hiddenWord {
+  font-size: 32px;
+  letter-spacing: 8px;
+  margin: 20px 0;
   font-weight: bold;
-  color: #007bff;
+  color: var(--primary-dark);
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-.win-message {
-  color: #28a745;
-  font-size: 1.5em;
-  animation: pulse 1s infinite;
+#timer {
+  font-weight: bold;
+  color: var(--danger);
+  font-size: 20px;
 }
 
-.lose-message {
-  color: #dc3545;
-  font-size: 1.5em;
+#message {
+  min-height: 24px;
+  margin: 15px 0;
+  font-weight: 500;
 }
 
-@keyframes pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-  100% { transform: scale(1); }
+.correct {
+  color: var(--success);
+}
+
+.incorrect {
+  color: var(--danger);
+}
+
+/* Màn hình kết thúc */
+.results {
+  padding: 20px;
+}
+
+.score-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  background-color: var(--light);
+  margin-bottom: 10px;
+  border-radius: var(--border-radius);
+}
+
+.score-item.winner {
+  background-color: #e8f5e8;
+  border: 2px solid var(--success);
+}
+
+.player-rank {
+  font-weight: bold;
+  width: 30px;
+  text-align: center;
+}
+
+.player-score {
+  font-weight: bold;
+  color: var(--primary);
+}
+
+.end-buttons {
+  display: flex;
+  gap: 15px;
+  padding: 20px;
+}
+
+.end-buttons button {
+  flex: 1;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .lobby-content, .room-content, .game-content {
+    grid-template-columns: 1fr;
+  }
+  
+  .players-list {
+    grid-template-columns: 1fr;
+  }
+  
+  .header, .game-header {
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
+  }
+  
+  .end-buttons {
+    flex-direction: column;
+  }
 }

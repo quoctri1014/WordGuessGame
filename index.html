@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word Guess Game</title>
+    <link rel="stylesheet" href="style.css"> 
+</head>
+<body>
+
+    <h1>Trò Chơi Đoán Từ</h1>
+
+    <div id="startArea">
+        <label for="playerNameInput">Tên Người Chơi:</label>
+        <input type="text" id="playerNameInput" value="Player1" autocomplete="off">
+
+        <label for="wordPackSelect">Gói Từ:</label>
+        <select id="wordPackSelect">
+            <option value="words">Tổng hợp</option>
+            <option value="words_animals">Động vật</option>
+            <option value="words_jobs">Nghề nghiệp</option>
+        </select>
+
+        <label for="gameModeSelect">Chế Độ:</label>
+        <select id="gameModeSelect">
+            <option value="normal">Thường (Đoán Tiếng Anh)</option>
+            <option value="reverse">Ngược (Đoán Tiếng Việt)</option>
+        </select>
+        
+        <button id="startButton">Start Game</button>
+    </div>
+
+    <hr>
+
+    <div id="playerListContainer">
+        <h3>Người chơi trong phòng</h3>
+        <ul id="playerList">
+            </ul>
+    </div>
+
+    <hr>
+
+    <div id="gameArea">
+        <h2>Điểm: <span id="scoreDisplay">0</span> | Thời gian: <span id="timerDisplay">30</span>s</h2>
+        
+        <div id="imageDisplay">
+            </div>
+
+        <p id="wordDisplay">_ _ _ _</p>
+
+        <div id="guessArea">
+            <input type="text" id="guessInput" placeholder="Nhập đáp án..." disabled autocomplete="off">
+            <button id="guessButton" disabled>Đoán</button>
+        </div>
+        
+        <p id="messageArea"></p>
+    </div>
+
+    <div id="gameOverModal">
+        <div class="modal-content">
+            <h3>GAME OVER!</h3>
+            <p>Điểm của bạn: <strong id="finalScoreDisplay">0</strong></p>
+            <h4>Bảng Xếp Hạng Top 10</h4>
+            <ol id="rankingList"></ol>
+            <button id="restartButton">Chơi Lại</button>
+            <button id="closeModalButton">Đóng</button>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="main.js"></script> 
+</body>
+</html>
