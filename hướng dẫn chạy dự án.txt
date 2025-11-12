@@ -4,4 +4,6 @@ vd
 - window +R 
 - cmd
 - cd link tới thư mục project
+- gõ : " npm install"
+- đợi tới khi tải xong 
 - gõ: "node server.js"
