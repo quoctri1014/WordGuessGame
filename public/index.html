@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Word Guess Game - Trò chơi đoán từ (Multiplayer)</title>
+    <link rel="stylesheet" href="/style.css" />
+    <style>
+      /* Style này cần được giữ lại trong thẻ <style> hoặc chuyển vào style.css */
+      .invite-notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background-color: var(--secondary-hover);
+        color: white;
+        padding: 20px;
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        z-index: 1000;
+        display: none;
+        flex-direction: column;
+        gap: 10px;
+        max-width: 300px;
+      }
+      .invite-notification button {
+        background-color: var(--success);
+        color: white;
+        border: none;
+        padding: 8px 15px;
+        cursor: pointer;
+        border-radius: 8px;
+        transition: var(--transition);
+        width: auto;
+        max-width: none;
+        margin: 0;
+        box-shadow: none;
+      }
+      .invite-notification button:hover {
+        background-color: #388e3c;
+      }
+      .invite-notification .reject-btn {
+        background-color: var(--danger);
+      }
+      .invite-notification .reject-btn:hover {
+        background-color: #d32f2f;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div
+        id="header"
+        style="
+          width: 100%;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 20px;
+          border-bottom: 1px solid var(--gray-light);
+          padding-bottom: 10px;
+        "
+      >
+        <p style="font-size: 1.2rem; font-weight: 600; margin: 0">
+          Xin chào, <span id="displayName">Người chơi</span>!
+        </p>
+        <p style="margin: 0; color: var(--secondary-hover); font-weight: 600">
+          Điểm cao nhất : <span id="userTotalScore">0</span>
+        </p>
+      </div>
+
+      <div id="lobbyScreen" class="screen active" style="display: flex">
+        <h1>WordGuess Game</h1>
+        <p>Hãy bắt đầu trò chơi ngay nào !!!</p>
+
+        <div class="lobby-buttons">
+          <button id="createRoomBtn">Tạo Phòng Mới</button>
+          <button id="singlePlayerBtn">Chơi Một Người</button>
+          <button id="showRankingBtn">Bảng Xếp Hạng</button>
+          <button
+            id="logoutBtn"
+            class="danger-btn"
+            style="max-width: 300px; margin-top: 10px"
+          >
+            Đăng Xuất
+          </button>
+        </div>
+
+        <h3 style="margin-top: 30px">Tham gia phòng</h3>
+        <div style="display: flex; gap: 10px; width: 100%; max-width: 400px">
+          <input
+            id="roomSearchInput"
+            class="input"
+            placeholder="Nhập ID phòng ..."
+            style="margin-bottom: 0; flex-grow: 1"
+          />
+          <button id="searchRoomBtn" style="max-width: 120px; margin: 0">
+            Tham gia
+          </button>
+        </div>
+        <p
+          id="lobbyErrorMessage"
+          class="error-message"
+          style="margin-top: 10px"
+        ></p>
+      </div>
+
+      <div id="singlePlayerSettingsScreen" class="screen" style="display: none">
+        <h1>Cài đặt Chơi Đơn</h1>
+        <p>Vui lòng chọn chế độ và bộ từ bạn muốn chơi.</p>
+
+        <div style="width: 100%; max-width: 350px; text-align: left">
+          <label
+            for="singlePlayerModeSelect"
+            style="font-weight: 600; color: var(--gray)"
+            >Chế độ chơi:</label
+          >
+          <select
+            id="singlePlayerModeSelect"
+            class="input"
+            style="margin-bottom: 15px"
+          >
+            <option value="normal">Đoán Tiếng Anh (Gợi ý Tiếng Việt)</option>
+            <option value="reverse">Đoán Tiếng Việt (Gợi ý Tiếng Anh)</option>
+          </select>
+
+          <label
+            for="singlePlayerWordPackSelect"
+            style="font-weight: 600; color: var(--gray)"
+            >Bộ từ:</label
+          >
+          <select
+            id="singlePlayerWordPackSelect"
+            class="input"
+            style="margin-bottom: 25px"
+          ></select>
+        </div>
+
+        <div
+          class="lobby-buttons"
+          style="flex-direction: row; max-width: 350px"
+        >
+          <button id="startSinglePlayerGameBtn" style="flex: 2">Bắt Đầu</button>
+          <button
+            id="backToLobbyFromSingleBtn"
+            class="danger-btn"
+            style="flex: 1"
+          >
+            Quay Lại
+          </button>
+        </div>
+      </div>
+
+      <div id="roomScreen" class="screen" style="display: none">
+        <h1 id="roomNameDisplay">Phòng Chơi (ID: ...)</h1>
+
+        <p id="roomHostDisplay" class="room-host-tag"></p>
+
+        <div class="room-content">
+          <div class="room-settings-panel">
+            <h2 style="margin-top: 0">⚙️ Cài Đặt</h2>
+            <div id="roomSettingsDiv">
+              <label for="roomNameInput">Tên phòng:</label>
+              <input
+                id="roomNameInput"
+                class="input"
+                placeholder="Nhập tên phòng..."
+                disabled
+              />
+
+              <label for="roomMode">Chế độ chơi:</label>
+              <select id="roomMode" class="input" disabled>
+                <option value="normal">
+                  Đoán Tiếng Anh (Gợi ý Tiếng Việt)
+                </option>
+                <option value="reverse">
+                  Đoán Tiếng Việt (Gợi ý Tiếng Anh)
+                </option>
+              </select>
+
+              <label for="roomWordPack">Bộ từ:</label>
+              <select id="roomWordPack" class="input" disabled></select>
+
+              <p id="settingsMessage"></p>
+            </div>
+          </div>
+
+          <div class="room-players-panel">
+            <h2 style="margin-top: 0">
+              👥 Người Chơi (<span id="roomPlayersCount">0</span>)
+            </h2>
+            <div
+              id="roomPlayersList"
+              class="score-list"
+              style="max-height: 250px; overflow-y: auto"
+            ></div>
+
+            <div id="inviteSection" style="margin-top: 20px; display: none">
+              <h3
+                style="
+                  margin-top: 0;
+                  margin-bottom: 10px;
+                  color: var(--secondary-hover);
+                "
+              >
+                Mời Bạn Bè
+              </h3>
+              <input
+                id="inviteUsernameInput"
+                class="input"
+                placeholder="Nhập username của bạn bè..."
+                style="margin-bottom: 10px"
+              />
+              <button
+                id="invitePlayerBtn"
+                style="max-width: none; margin: 0; padding: 10px"
+              >
+                Gửi Lời Mời
+              </button>
+              <p
+                id="inviteMessage"
+                class="error-message"
+                style="margin-top: 10px"
+              ></p>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="room-actions"
+          style="
+            margin-top: 30px;
+            display: flex;
+            gap: 15px;
+            width: 100%;
+            max-width: 450px;
+          "
+        >
+          <button
+            id="startRoomBtn"
+            class="primary-btn"
+            style="display: none; flex-grow: 1"
+          >
+            ▶️ Bắt Đầu Game
+          </button>
+          <button id="leaveRoomBtn" class="danger-btn" style="flex-grow: 1">
+            ❌ Thoát Phòng
+          </button>
+        </div>
+      </div>
+
+      <div id="gameScreen" class="screen" style="display: none">
+        <h1 id="gameRoomName">Đang chơi</h1>
+        <p class="game-info">
+          Vòng <span id="currentRound">1</span> /
+          <span id="maxRounds">5</span>
+        </p>
+
+        <h2 style="color: var(--danger)">
+          Thời gian: <span id="timer">60</span>s
+        </h2>
+
+        <img id="hintImage" src="" alt="Gợi ý hình ảnh" style="display: none" />
+
+        <p class="game-info" id="currentHintType"></p>
+
+        <div id="wordDisplay">_ _ _ _ _ _</div>
+
+        <input
+          type="text"
+          id="guessInput"
+          class="input"
+          placeholder="Nhập câu trả lời của bạn và nhấn Enter..."
+          autocomplete="off"
+        />
+
+        <h3 id="message"></h3>
+
+        <h3 style="margin-top: 15px">Bảng điểm</h3>
+        <div id="gameScoreBoard" class="score-list"></div>
+      </div>
+
+      <div id="endScreen" class="screen" style="display: none">
+        <h1 id="endMessage">Trò chơi kết thúc!</h1>
+        <div
+          class="results"
+          style="margin-top: 20px; width: 100%; max-width: 400px"
+        >
+          <h3>🏆 Bảng xếp hạng Vòng này 🏆</h3>
+          <div id="finalScores" class="score-list"></div>
+        </div>
+        <div
+          class="end-buttons"
+          style="display: flex; gap: 15px; margin-top: 30px"
+        >
+          <button id="backToLobbyBtn" style="flex-grow: 1">Quay lại</button>
+          <button id="showGlobalRankingBtn" style="flex-grow: 1">
+            Xem Bảng Xếp Hạng
+          </button>
+        </div>
+      </div>
+
+      <div id="rankingScreen" class="screen" style="display: none">
+        <h1>Bảng Xếp Hạng</h1>
+        <p>Top 10 người chơi có tổng điểm cao nhất.</p>
+        <div
+          id="globalRankingList"
+          class="score-list"
+          style="max-height: 450px; overflow-y: auto"
+        ></div>
+        <button id="backFromRankingBtn" style="margin-top: 20px">
+          Quay lại
+        </button>
+      </div>
+    </div>
+
+    <div id="inviteNotification" class="invite-notification">
+      <p>
+        <span id="inviteRoomName"></span>
+      </p>
+      <div style="display: flex; gap: 10px">
+        <button id="acceptInviteBtn">Chấp nhận</button>
+        <button id="rejectInviteBtn" class="reject-btn">Từ chối</button>
+      </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/game_bundle.js"></script>
+  </body>
+</html>
