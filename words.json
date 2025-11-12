@@ -1,0 +1,48 @@
+[
+  { "word": "banana", "meaning": "quả chuối", "image": "images/banana.jpg" },
+  { "word": "dog", "meaning": "con chó", "image": "images/dog.jpg" },
+  { "word": "car", "meaning": "xe hơi", "image": "images/car.jpg" },
+  { "word": "book", "meaning": "quyển sách", "image": "images/book.jpg" },
+  { "word": "orange", "meaning": "quả cam", "image": "images/orange.jpg" },
+  { "word": "grape", "meaning": "quả nho", "image": "images/grape.jpg" },
+  { "word": "plane", "meaning": "máy bay", "image": "images/plane.jpg" },
+  { "word": "ship", "meaning": "tàu thủy", "image": "images/ship.jpg" },
+  { "word": "chair", "meaning": "cái ghế", "image": "images/chair.jpg" },
+  { "word": "table", "meaning": "cái bàn", "image": "images/table.jpg" },
+  { "word": "moon", "meaning": "mặt trăng", "image": "images/moon.jpg" },
+  { "word": "tiger", "meaning": "con hổ", "image": "images/tiger.jpg" },
+  { "word": "elephant", "meaning": "con voi", "image": "images/elephant.jpg" },
+  { "word": "kitten", "meaning": "mèo con", "image": "images/kitten.jpg" },
+  { "word": "parrot", "meaning": "con vẹt", "image": "images/parrot.jpg" },
+  { "word": "rabbit", "meaning": "con thỏ", "image": "images/rabbit.jpg" },
+  { "word": "bird", "meaning": "con chim", "image": "images/bird.jpg" },
+  { "word": "eagle", "meaning": "đại bàng", "image": "images/eagle.jpg" },
+  { "word": "lion", "meaning": "sư tử", "image": "images/lion.jpg" },
+  { "word": "bear", "meaning": "gấu", "image": "images/bear.jpg" },
+  { "word": "ant", "meaning": "kiến", "image": "images/ant.jpg" },
+  { "word": "spider", "meaning": "nhện", "image": "images/spider.jpg" },
+  { "word": "mouse", "meaning": "chuột", "image": "images/mouse.jpg" },
+  { "word": "doctor", "meaning": "bác sĩ", "image": "images/doctor.jpg" },
+  { "word": "teacher", "meaning": "giáo viên", "image": "images/teacher.jpg" },
+  { "word": "nurse", "meaning": "y tá", "image": "images/nurse.jpg" },
+  { "word": "engineer", "meaning": "kỹ sư", "image": "images/engineer.jpg" },
+  {
+    "word": "police",
+    "meaning": "cảnh sát",
+    "image": "images/police_officer.jpg"
+  },
+  {
+    "word": "firefighter",
+    "meaning": "lính cứu hỏa",
+    "image": "images/firefighter.jpg"
+  },
+  { "word": "chef", "meaning": "đầu bếp", "image": "images/chef.jpg" },
+  { "word": "farmer", "meaning": "nông dân", "image": "images/farmer.jpg" },
+  { "word": "driver", "meaning": "tài xế", "image": "images/driver.jpg" },
+  { "word": "pilot", "meaning": "phi công", "image": "images/pilot.jpg" },
+  {
+    "word": "programmer",
+    "meaning": "lập trình viên",
+    "image": "images/programmer.jpg"
+  }
+]
